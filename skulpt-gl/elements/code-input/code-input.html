@@ -1,0 +1,76 @@
+<link rel="import" href="./example-input-box.html">
+<polymer-element name="example-element" attributes="displayStr">
+  <template>
+    <style>
+      :host {
+        display: block;
+        text-align: left;
+        width: 500px;
+        border: 1px solid black;
+        font-family: sans-serif;
+        padding: 0px;
+        margin: 20px;
+      }
+      :host > .title {
+        background: rgb(160, 160, 240);
+        font-size: 30px;
+        font-weight: bold;
+        padding: 5px;
+        margin: 0px;
+      }
+      :host > .description {
+        font-size: 15px;
+        padding: 12px 8px 12px 8px;
+      }
+      :host > .input {
+        padding: 12px 0px 12px 0px;
+        margin-left:auto;
+        margin-right:auto;
+        width:85%;
+      }
+      :host > .output {
+        font-size: 30px;
+        padding: 8px;
+      }
+    </style>
+    <div class="title"><b>{{myName}}</b>!</div>
+    <div class="description">This is {{myName}}'s horrible, terrible, wonderful translator.  Please give it a try!  (english only:))</div>
+    <div class="input">
+      <example-input-box typedStr={{displayStr}} inputBoxLen={{textLen}}>{{myName}}</example-input-box>
+    </div>
+    </center>
+    <div class="output">{{translatedStr}}</div>
+  </template>
+  <script>
+    Polymer('example-element', {
+      myName: 'Example',
+      dict: {},
+      translatedStr: '',
+      textLen: 10,
+      ready: function() {
+        var that = this;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/data/example/pair.json');
+        xhr.responseType = 'json';
+        xhr.onloadend = function(event) {
+          if (event.target.status == 200) {
+            that.dict = event.target.response;
+          }
+        }
+        xhr.send();
+      },
+      displayStrChanged: function(oldVal, newVal) {
+        var splitStrs = newVal.split(' ');
+        this.translatedStr = '';
+        for (var i = 0; i < splitStrs.length; i++) {
+          var word = this.dict[splitStrs[i].toLowerCase()];
+          if (!word) {
+            word = splitStrs[i];
+          }
+          this.translatedStr += word + ' ';
+        }
+        this.textLen = Math.floor((newVal.length + 10) / 10) * 10;
+      }
+    });
+  </script>
+</polymer-element>

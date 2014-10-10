@@ -1,0 +1,26 @@
+<polymer-element name="starter-element">
+  <template>
+    <style>
+      :host {
+        display: block;
+        text-align: left;
+        width: 500px;
+        border: 1px solid black;
+        font-family: sans-serif;
+        padding: 0px;
+        margin: 20px;
+      }
+      :host > .title {
+      }
+      :host > .description {
+      }
+    </style>
+    <div class="title">{{myName}}!</div>
+    <div class="description">This is a description of {{myName}}'s element</div>
+  </template>
+  <script>
+    Polymer('starter-element', {
+      myName: 'Starter'
+    });
+  </script>
+</polymer-element>
