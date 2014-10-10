@@ -1,5 +1,5 @@
 {
-  "name": "polymer-exercise",
+  "name": "skulpt-gl",
   "version": "0.0.1",
   "authors": [
   ],
@@ -11,8 +11,6 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#~0.4.2",
-    "polymer-collapse": "Polymer/polymer-collapse#~0.4.0",
-    "polymer-ajax": "Polymer/polymer-ajax#~0.4.0",
-    "polymer-flex-layout": "Polymer/polymer-flex-layout#~0.4.0"
+    "polymer-flex-layout": "Polymer/polymer-flex-layout"
   }
 }
