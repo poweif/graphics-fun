@@ -1,20 +1,60 @@
+<link rel="import" href="/bower_components/core-icon-button/core-icon-button.html">
+<link rel="import" href="/bower_components/core-input/core-input.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
 <polymer-element name="code-input" attributes="">
   <template>
     <style>
       :host {
-        display: block;
-        text-align: left;
-        width: 500px;
-        border: 1px solid black;
-        font-family: sans-serif;
-        padding: 0px;
-        margin: 20px;
+	display: inline-block;
+	text-align: left;
+	border: 1px solid black;
+	font-family: sans-serif;
+	padding: 20px;
+	margin: 20px;
+      }
+      .run-button {
+	background-color: rgb(185, 250, 185);
+      }
+      .input-field {
+	display: block;
+	width: 1000px;
+	height: 700px;
+	border: 1px rgb(155, 155, 155) solid;
+	margin: 10px;
+	font-family: monospace;
       }
     </style>
-    <div>code-input</div>
+    <core-input id="inputField" class="input-field" multiline rows="fit" placeholder="Input"></core-input>
+    <core-icon-button class="run-button" on-click="{{runProg}}" icon="forward">===== Run ======</core-icon-button>
+    <core-ajax auto url="/simple.py" handleAs="text" on-core-response="{{handleResponse}}"></core-ajax>
   </template>
   <script>
     Polymer('code-input', {
+      code: '',
+      outputText: function(text) {
+	var output = document.getElementById("webglOutput");
+	console.log(output.innerHTML);
+	output.innerHTML = output.innerHTML + text;
+
+      },
+      handleResponse: function(e) {
+	this.$.inputField.inputValue = "print 'hello world'";
+	this.$.inputField.commit();
+      },
+      runProg: function(e) {
+	var prog = this.$.inputField.inputValue;
+	Sk.canvas = "threedDisplay";
+	Sk.pre = "webglOutput";
+	Sk.configure({
+	   "output": this.outputText
+	});
+	try {
+	  eval(Sk.importMainWithBody("<stdin>", false, prog));
+	}
+	catch(e) {
+	  alert(e);
+	}
+      }
     });
   </script>
 </polymer-element>

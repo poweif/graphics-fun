@@ -1,5 +1,9 @@
 #/bin/sh
 
+function cp_skulpt() {
+    cp -r ../../skulpt/dist ./skulpt
+}
+
 function update() {
     # Nodejs packages
     npm install
@@ -17,5 +21,6 @@ print ctc_port_id'`
 grunt
 }
 
+cp_skulpt
 update
 serve

@@ -1,23 +1,23 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>WebGL Movement</title>
-
-    <style type="text/css">
-      body { background-color: grey;}
-      canvas { background-color: white;}
-    </style>
-    <script src="/skulpt/skulpt.min.js" type="text/javascript"></script>
-    <script src="/skulpt/skulpt-stdlib.js" type="text/javascript"></script>
-</head>
-
-<body>
-<h1>WebGL Movement</h1>
-<form>
-<textarea id="code" name="code" cols="120" rows="40">
 import webgl
 from math import sin
+
+vertex_shader_txt = """
+attribute vec3 aVertexPosition;
+attribute vec3 aVertexColor;
+varying highp vec4 vColor;
+
+void main(void) {
+  gl_Position = vec4(aVertexPosition, 1.0);
+  vColor = vec4(aVertexColor, 1.0); 
+}
+"""
+
+frag_shader_txt="""
+varying highp vec4 vColor;
+void main(void) {
+  gl_FragColor = vColor;
+}
+"""
 
 gl = webgl.Context("my-canvas")
 trianglesVerticeBuffer = gl.createBuffer()
@@ -27,11 +27,11 @@ program = None
 def setup():
   global program
   vs = gl.createShader(gl.VERTEX_SHADER) 
-  gl.shaderSource(vs, "attribute vec3 aVertexPosition; attribute vec3 aVertexColor; varying highp vec4 vColor; void main(void) { gl_Position = vec4(aVertexPosition, 1.0); vColor = vec4(aVertexColor, 1.0); }")
+  gl.shaderSource(vs, vertext_shader_txt)
   gl.compileShader(vs)
   print "Vertex shader COMPILE_STATUS: " + str(gl.getShaderParameter(vs, gl.COMPILE_STATUS))
   fs = gl.createShader(gl.FRAGMENT_SHADER) 
-  gl.shaderSource(fs, "varying highp vec4 vColor; void main(void) { gl_FragColor = vColor; }")
+  gl.shaderSource(fs, frag_shader_txt)
   gl.compileShader(fs)
   print "Fragment shader COMPILE_STATUS: " + str(gl.getShaderParameter(fs, gl.COMPILE_STATUS))
 
@@ -75,40 +75,3 @@ def draw(gl, elapsed):
 setup()
 
 gl.setDrawFunc(draw);
-</textarea>
-<button onclick="runit()" type="button">Run</button>
-</form>
-<canvas id="my-canvas" height="300" width="400">
-  Your browser does not support the HTML5 canvas element.
-</canvas>
-<pre id="my-output" ></pre>
-    <script>
-      function outputHandler(text) {
-        var output = document.getElementById("my-output");
-        output.innerHTML = output.innerHTML + text.replace(/</g, '&lt;');
-      }
-
-      function builtinRead(x) {
-        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
-          throw "File not found: '" + x + "'";
-        }
-        return Sk.builtinFiles["files"][x];
-      }
-
-      function runit() {
-        var prog = document.getElementById("code").value;
-        // Clear the output
-        document.getElementById("my-output").innerHTML = '';
-        Sk.canvas = "my-canvas";
-        Sk.pre = "my-output";
-        Sk.configure({"output":outputHandler, "read":builtinRead});
-        try {
-           eval(Sk.importMainWithBody("<stdin>", false, prog));
-        }
-        catch(e) {
-          alert(e);
-        }
-      }
-    </script>
-  </body>
-</html>
