@@ -1,59 +1,80 @@
 <link rel="import" href="/bower_components/core-icon-button/core-icon-button.html">
 <link rel="import" href="/bower_components/core-input/core-input.html">
 <link rel="import" href="/bower_components/core-ajax/core-ajax.html">
-<polymer-element name="code-input" attributes="">
+<polymer-element name="code-input" attributes="inputFile">
   <template>
     <style>
       :host {
-	display: inline-block;
-	text-align: left;
-	border: 1px solid black;
-	font-family: sans-serif;
-	padding: 20px;
-	margin: 20px;
+        display: inline-block;
+        text-align: left;
+        border: 1px solid black;
+        font-family: sans-serif;
+        padding: 5px;
       }
       .run-button {
-	background-color: rgb(185, 250, 185);
+        display: inline-block;
+        border: 1px solid rgb(200,200,200);
       }
       .input-field {
-	display: block;
-	width: 1000px;
-	height: 700px;
-	border: 1px rgb(155, 155, 155) solid;
-	margin: 10px;
-	font-family: monospace;
+        display: inline-block;
+        width: 800px;
+        height: 500px;
+        margin: 5px;
+        padding: 5px;
+        border: 1px rgb(155, 155, 155) solid;
+        font-family: monospace;
+        font-size: 10px;
       }
     </style>
-    <core-input id="inputField" class="input-field" multiline rows="fit" placeholder="Input"></core-input>
-    <core-icon-button class="run-button" on-click="{{runProg}}" icon="forward">===== Run ======</core-icon-button>
-    <core-ajax auto url="/simple.py" handleAs="text" on-core-response="{{handleResponse}}"></core-ajax>
+    <core-icon-button class="run-button" on-click="{{runProg}}" icon="forward">
+      ===== Run ======
+    </core-icon-button>
+    <br />
+    <core-input id="inputField"
+                class="input-field"
+                multiline rows="fit"
+                placeholder="Input">
+    </core-input>
+    <core-ajax auto url="{{inputFile}}"
+               handleAs="text"
+               on-core-response="{{handleResponse}}">
+    </core-ajax>
   </template>
   <script>
     Polymer('code-input', {
-      code: '',
-      outputText: function(text) {
-	var output = document.getElementById("webglOutput");
-	console.log(output.innerHTML);
-	output.innerHTML = output.innerHTML + text;
-
+      ready: function() {
+        var that = this;
+        setTimeout(function() {
+          that.runProg();
+        }, 300);
       },
       handleResponse: function(e) {
-	this.$.inputField.inputValue = "print 'hello world'";
-	this.$.inputField.commit();
+        this.$.inputField.inputValue = e.detail.response;
+        this.$.inputField.commit();
       },
-      runProg: function(e) {
-	var prog = this.$.inputField.inputValue;
-	Sk.canvas = "threedDisplay";
-	Sk.pre = "webglOutput";
-	Sk.configure({
-	   "output": this.outputText
-	});
-	try {
-	  eval(Sk.importMainWithBody("<stdin>", false, prog));
-	}
-	catch(e) {
-	  alert(e);
-	}
+      runProg: function(err) {
+        var prog = this.$.inputField.inputValue;
+        var output = function(s) {
+          console.log(s);
+        };
+        var builtinRead = function(x) {
+          if (Sk.builtinFiles === undefined ||
+              Sk.builtinFiles["files"][x] === undefined) {
+            throw "File not found: '" + x + "'";
+          }
+          return Sk.builtinFiles["files"][x];
+        };
+
+        Sk.canvas = "threedDisplay";
+        Sk.configure({
+           "output": output,
+           "read": builtinRead
+        });
+        try {
+          eval(Sk.importMainWithBody("<stdin>", false, prog));
+        } catch(e) {
+          console.log(e.toString());
+        }
       }
     });
   </script>
