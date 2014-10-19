@@ -1,7 +1,9 @@
 import webgl
+import webgl.glut
 from math import sin
 
 gl = webgl.Context("threedDisplay")
+glut = webgl.glut.Init(gl)
 trianglesVerticeBuffer = gl.createBuffer()
 trianglesColorBuffer = gl.createBuffer()
 program = None
@@ -31,7 +33,7 @@ def setup():
   print ("Vertex shader COMPILE_STATUS: " +
          str(gl.getShaderParameter(vs, gl.COMPILE_STATUS)))
   fs = gl.createShader(gl.FRAGMENT_SHADER)
-  gl.shaderSource(fs, fs_src);
+  gl.shaderSource(fs, fs_src)
   gl.compileShader(fs)
   print ("Fragment shader COMPILE_STATUS: " +
          str(gl.getShaderParameter(fs, gl.COMPILE_STATUS)))
@@ -46,26 +48,19 @@ def setup():
 
   triangleVerticeColors = [1.0, 0.0, 0.0,
                            1.0, 1.0, 1.0,
-                           1.0, 0.0, 0.0,
-                           0.0, 0.0, 1.0,
-                           1.0, 1.0, 1.0,
-                           0.0, 0.0, 1.0]
+                           1.0, 0.0, 0.0]
 
   gl.bindBuffer(gl.ARRAY_BUFFER, trianglesColorBuffer)
   gl.bufferData(gl.ARRAY_BUFFER, webgl.Float32Array(triangleVerticeColors),
                 gl.STATIC_DRAW)
 
-def draw(gl, elapsed):
-  gl.clearColor(0.1, 0.5, 0.1, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.viewport(0, 0, 400, 300);
-  translation = sin(elapsed * 2.0 * 3.14159 / 10000.0)/2.0;
-  triangleVertices = [-0.5 + translation,  0.5, 0.0,
-                       0.0 + translation,  0.0, 0.0,
-                      -0.5 + translation, -0.5, 0.0,
-                       0.5 + translation,  0.5, 0.0,
-                       0.0 + translation,  0.0, 0.0,
-                       0.5 + translation, -0.5, 0.0]
+def render(gl):
+  gl.clearColor(1.0, 1.0, 1.0, 1.0)
+  gl.clear(gl.COLOR_BUFFER_BIT)
+  gl.viewport(0, 0, 400, 400)
+  triangleVertices = [-0.5,  0.5, 0.0,
+                       0.0,  0.0, 0.0,
+                      -0.5, -0.5, 0.0]
   gl.bindBuffer(gl.ARRAY_BUFFER, trianglesVerticeBuffer)
   gl.bufferData(gl.ARRAY_BUFFER, webgl.Float32Array(triangleVertices),
                 gl.DYNAMIC_DRAW)
@@ -79,10 +74,21 @@ def draw(gl, elapsed):
   gl.bindBuffer(gl.ARRAY_BUFFER, trianglesColorBuffer)
   gl.vertexAttribPointer(vertexColorAttribute, 3, gl.FLOAT, False, 0, 0)
 
-  gl.drawArrays(gl.TRIANGLES, 0, 6)
+  gl.drawArrays(gl.TRIANGLES, 0, 3)
+
+def mouse(gl, button, state, x, y):
+  print str(x) + " " + str(y)
+
+def mouseMove(gl, x, y):
+  print 'mouse moving: ' + str(x) + ' ' + str(y)
+
+def keyboard(gl, ch, x, y):
+  print 'pressed ' + ch + ' with position at: ' + str(x) + ' ' + str(y)
 
 def main():
   setup()
-  gl.setDrawFunc(draw);
+  glut.displayFunc(render)
+  glut.mouseFunc(mouse)
+  glut.keyboardFunc(keyboard)
 
 main()
