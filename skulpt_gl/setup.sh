@@ -11,16 +11,35 @@ function update() {
     bower update
 }
 
-function serve() {
-export CTC_TEST_PORT=`grep $USER /etc/passwd | sed -r 's/.*\:([0-9]+)\:.*/\1/'|\
-python -c '
-import sys
-user_id = int(sys.stdin.readline().strip()) - 1000
-ctc_port_id = 8000 + (user_id * 100) + 53
-print ctc_port_id'`
-grunt
+function libigl_update() {
+cd nacl
+
+if [ ! -d ./libigl ]; then
+   git clone https://github.com/libigl/libigl.git
+fi
+
+if [ ! -d ./eigen ]; then
+   hg clone https://bitbucket.org/eigen/eigen/
+   cd ./eigen/unsupported/Eigen/src/SparseExtra
+   patch < ../../../../../MatrixMarketIterator.patch
+   cd ../../../../../
+fi
+
+if [ ! -d ./libigl/include/Eigen ]; then
+    cd libigl/include
+    ln -s ../../eigen/Eigen .
+    cd ../../
+fi
+
+if [ ! -d ./libigl/include/unsupported ]; then
+    cd libigl/include
+    ln -s ../../eigen/unsupported .
+    cd ../../
+fi
+
+cd ..
 }
 
 cp_skulpt
 update
-serve
+libigl_update

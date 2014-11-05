@@ -1,9 +1,5 @@
-import webgl
-import webgl.glut
 from math import sin
 
-gl = webgl.Context("threedDisplay")
-glut = webgl.glut.Init(gl)
 trianglesVerticeBuffer = gl.createBuffer()
 trianglesColorBuffer = gl.createBuffer()
 program = None
@@ -57,7 +53,7 @@ def setup():
 def render(gl):
   gl.clearColor(1.0, 1.0, 1.0, 1.0)
   gl.clear(gl.COLOR_BUFFER_BIT)
-  gl.viewport(0, 0, 400, 400)
+  gl.viewport(0, 0, 500, 500)
   triangleVertices = [-0.5,  0.5, 0.0,
                        0.0,  0.0, 0.0,
                       -0.5, -0.5, 0.0]
